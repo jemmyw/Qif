@@ -15,4 +15,3 @@ spec/lib/transaction_spec.rb
 spec/lib/writer_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
-test.rb
