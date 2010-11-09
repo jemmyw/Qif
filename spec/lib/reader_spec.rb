@@ -1,7 +1,7 @@
 require 'spec/spec_helper'
 
 describe Qif::Reader do
-  %w(dd/mm/yyyy mm/dd/yyyy).each do |format|
+  %w(dd/mm/yyyy mm/dd/yyyy dd/mm/yy mm/dd/yy).each do |format|
     before do
       @file = 'spec/fixtures/3_records_%s.qif' % format.gsub('/', '')
       @instance = Qif::Reader.new(open(@file), format)
