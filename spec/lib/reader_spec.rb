@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
 describe Qif::Reader do
   %w(dd/mm/yyyy mm/dd/yyyy dd/mm/yy mm/dd/yy).each do |format|
@@ -12,21 +12,21 @@ describe Qif::Reader do
     end
     
     it 'should have a debit of $10 on the 1st of January 2010' do
-      transaction = @instance.transactions.detect{|t| t.date == Time.mktime(2010, 1, 1)}
+      transaction = @instance.transactions.detect{|t| t.date == Time.mktime(2010, 1, 1) || t.date == Time.mktime(10, 1, 1)}
       transaction.should_not be_nil
       transaction.name.should == 'Debit'
       transaction.amount.should == -10.0
     end
     
     it 'should have a debit of $20 on the 1st of June 1020' do
-      transaction = @instance.transactions.detect{|t| t.date == Time.mktime(2010, 6, 1)}
+      transaction = @instance.transactions.detect{|t| t.date == Time.mktime(2010, 6, 1) || t.date == Time.mktime(10, 6, 1)}
       transaction.should_not be_nil
       transaction.name.should == 'Debit'
       transaction.amount.should == -20.0
     end
     
     it 'should have a credit of $30 on the 29th of December 2010' do
-      transaction = @instance.transactions.detect{|t| t.date == Time.mktime(2010, 12, 29)}
+      transaction = @instance.transactions.detect{|t| t.date == Time.mktime(2010, 12, 29) || t.date == Time.mktime(10, 12, 29)}
       transaction.should_not be_nil
       transaction.name.should == 'Credit'
       transaction.amount.should == 30.0
