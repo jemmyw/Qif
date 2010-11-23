@@ -15,7 +15,7 @@ module Qif
   #   end
   class Reader
     include Enumerable
-  
+
     # Create a new Qif::Reader object. The data argument must be
     # either an IO object or a String containing the Qif file data.
     #
@@ -27,7 +27,7 @@ module Qif
       read_header
       reset
     end
-    
+
     # Return an array of Qif::Transaction objects from the Qif file. This
     # method reads the whole file before returning, so it may not be suitable
     # for very large qif files.
@@ -35,7 +35,7 @@ module Qif
       read_all_transactions
       transaction_cache
     end
-  
+
     # Call a block with each Qif::Transaction from the Qif file. This
     # method yields each transaction as it reads the file so it is better
     # to use this than #transactions for large qif files.
@@ -43,56 +43,68 @@ module Qif
     #   reader.each do |transaction|
     #     puts transaction.amount
     #   end
-    def each(&block)    
+    def each(&block)
       reset
-    
+
       while transaction = next_transaction
         yield transaction
       end
     end
-    
+
     # Return the number of transactions in the qif file.
     def size
       read_all_transactions
       transaction_cache.size
     end
     alias length size
-  
+
     private
-  
+
     def read_all_transactions
       while next_transaction; end
     end
-  
+
     def transaction_cache
       @transaction_cache ||= []
     end
-  
+
     def reset
       @index = -1
     end
-  
+
+    def rewind
+      @data.rewind
+    end
+
     def next_transaction
       @index += 1
-    
+
       if transaction = transaction_cache[@index]
         transaction
       else
         read_transaction
       end
     end
-  
+
     def read_header
-      @header = read_record
+      begin 
+        line = @data.readline
+      end until line =~ /^!/ || line =~ /^\w/
+
+      if line =~ /^!/
+        @header = line[1..-1].strip
+      else
+        @header = ''
+      end
     end
-  
+
     def read_transaction
       if record = read_record
         transaction = Transaction.read(record)
         cache_transaction(transaction) if transaction
       end
     end
-  
+
     def cache_transaction(transaction)
       transaction_cache[@index] = transaction
     end
@@ -105,12 +117,12 @@ module Qif
         key = line[0,1]
 
         record[key] = line[1..-1].strip
-        
+
         if date = @format.parse(record[key])
           record[key] = date
         end
       end until line =~ /^\^/
-      
+
       record
     rescue EOFError => e
       @data.close
