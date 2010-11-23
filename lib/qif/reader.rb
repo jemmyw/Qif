@@ -25,9 +25,10 @@ module Qif
       @format = DateFormat.new(format)
       @data = data.respond_to?(:read) ? data : StringIO.new(data.to_s)
       read_header
+      rewind
       reset
     end
-    
+
     # Return an array of Qif::Transaction objects from the Qif file. This
     # method reads the whole file before returning, so it may not be suitable
     # for very large qif files.
@@ -43,7 +44,7 @@ module Qif
     #   reader.each do |transaction|
     #     puts transaction.amount
     #   end
-    def each(&block)    
+    def each(&block)
       reset
     
       while transaction = next_transaction
@@ -71,7 +72,11 @@ module Qif
     def reset
       @index = -1
     end
-  
+
+    def rewind
+      @data.rewind
+    end
+
     def next_transaction
       @index += 1
     
