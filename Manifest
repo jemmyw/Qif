@@ -7,7 +7,10 @@ lib/qif/date_format.rb
 lib/qif/reader.rb
 lib/qif/transaction.rb
 lib/qif/writer.rb
+qif.gemspec
+spec/fixtures/3_records_ddmmyy.qif
 spec/fixtures/3_records_ddmmyyyy.qif
+spec/fixtures/3_records_mmddyy.qif
 spec/fixtures/3_records_mmddyyyy.qif
 spec/lib/date_format_spec.rb
 spec/lib/reader_spec.rb
