@@ -45,7 +45,7 @@ describe Qif::Writer do
   describe '#write' do
     it 'should write the header' do
       @instance.write
-      @buffer.should include("!Type:Bank\n^")
+      @buffer.should include("!Type:Bank\n")
     end
     
     it 'should write any pending transactions' do
