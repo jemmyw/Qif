@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require File.expand_path('../../spec_helper', __FILE__)
 
 describe Qif::DateFormat do
   it 'should work with 2 digit years in mm/dd/yy format' do
