@@ -39,7 +39,7 @@ module Qif
       @format = format
       @transactions = []
     end
-
+    
     # Add a transaction for writing
     def <<(transaction)
       @transactions << transaction
@@ -59,7 +59,7 @@ module Qif
     private
     
     def write_header
-      write_record('!Type:%s' % @type)
+      @io.write("!Type:%s\n" % @type)
     end
     
     def write_transactions
