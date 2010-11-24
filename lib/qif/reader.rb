@@ -81,9 +81,29 @@ module Qif
         read_transaction
       end
     end
+
+    # lineno= and seek don't seem
+    # to work with StringIO
+    def rewind_to(n)
+      @data.rewind
+      while @data.lineno != n
+        @data.readline
+      end
+    end
   
     def read_header
-      @header = read_record
+      headers = []
+      begin
+        line = @data.readline.strip
+        headers << line.strip if line =~ /^!/
+      end until line !~ /^!/
+
+      @header = headers.shift
+      @options = headers.map{|h| h.split(':').last }
+      
+      unless line =~ /^\^/
+        rewind_to @data.lineno - 1
+      end
     end
   
     def read_transaction

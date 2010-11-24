@@ -1,3 +1,6 @@
+v0.4 Follow QIF specification that an end of entry should not appear under a
+header [jscipione]
+
 v0.3 Allow two digit years [caleb]
 
 v0.2 Added documentation
