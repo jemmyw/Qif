@@ -3,38 +3,52 @@ require 'qif/date_format'
 module Qif
   # The Qif::Transaction class represents transactions in a qif file.
   class Transaction
-    attr_accessor :date, :amount, :name, :description, :reference
     
+    
+    SUPPORTED_FIELDS = {
+:date => {"D" => "Date"},
+:amount => {"T" => "Amount"},
+:status => {"C" => "Cleared status"},
+:number => {"N" => "Num (check or reference number)"},
+:reference => {"P" => "Payee"},
+:description => {"M" => "Memo"},
+:adress => {"A" => "Address (up to five lines; the sixth line is an optional message)"},
+:name => {"L" => "Category (Category/Subcategory/Transfer/Class)"},
+:split_category => {"S" => "Category in split (Category/Transfer/Class)"},
+:split_memo => {"E" => "Memo in split"},
+:split_amount => {"$" => "Dollar amount of split"},
+:end => {"^" => "End of entry"}
+}
+    SUPPORTED_FIELDS.keys.each{|s| attr_accessor s}
+
     def self.read(record) #::nodoc
       return nil unless record['D'].respond_to?(:strftime)
-      
-      Transaction.new(
-        :date => record['D'],
-        :amount => record['T'].to_f, 
-        :name => record['L'], 
-        :description => record['M'],
-        :reference => record['P']
-      )
+      SUPPORTED_FIELDS.each{|k,v| record[k] = record.delete(v.keys.first)}
+      record.reject{|k,v| v.nil?}.each{|k,v| record[k] = record[k].to_f if k.to_s.include? "amount"}
+      Transaction.new record
     end
     
     def initialize(attributes = {})
-      @date = attributes[:date]
-      @amount = attributes[:amount]
-      @name = attributes[:name]
-      @description = attributes[:description]
-      @reference = attributes[:reference]
+      SUPPORTED_FIELDS.keys.each{|s| instance_variable_set("@#{s.to_s}", attributes[s])}
     end
     
     # Returns a representation of the transaction as it
     # would appear in a qif file.
     def to_s(format = 'dd/mm/yyyy')
-      {
-        'D' => DateFormat.new(format).format(date),
-        'T' => '%.2f' % amount,
-        'L' => name,
-        'M' => description,
-        'P' => reference
-      }.map{|k,v| "#{k}#{v}" }.join("\n")
+      SUPPORTED_FIELDS.collect do |k,v|
+        next unless current = instance_variable_get("@#{k}")
+        field = v.keys
+        case current.class.to_s
+          when "Time"
+            "#{field}#{DateFormat.new(format).format(current)}"
+          when "Float"
+            "#{field}#{'%.2f'%current}"
+          when "String"
+            current.split("\n").collect {|x| "#{field}#{x}" }
+          else
+            "#{field}#{current}"
+        end
+      end.flatten.compact.join("\n")
     end
   end
 end
