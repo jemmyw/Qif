@@ -16,11 +16,13 @@ module Qif
   class Reader
     include Enumerable
   
-    SUPPORTED_ACCOUNTS = {"!Type:Bank" => "Bank account transactions",
-"!Type:Cash" => "Cash account transactions",
-"!Type:CCard" => "Credit card account transactions",
-"!Type:Oth A" => "Asset account transactions",
-"!Type:Oth L" => "Liability account transactions"}
+    SUPPORTED_ACCOUNTS = {
+      "!Type:Bank" => "Bank account transactions",
+      "!Type:Cash" => "Cash account transactions",
+      "!Type:CCard" => "Credit card account transactions",
+      "!Type:Oth A" => "Asset account transactions",
+      "!Type:Oth L" => "Liability account transactions"
+    }
 
     class UnknownAccountType < StandardError; end
     

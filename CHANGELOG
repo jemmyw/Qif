@@ -1,3 +1,5 @@
+v1.0 Added account types and fields from QIF specification. [elmatou]
+
 v0.5 Writes qif files without a record separator after the header. [jscipione]
 
 v0.4 Follow QIF specification that an end of entry should not appear under a
