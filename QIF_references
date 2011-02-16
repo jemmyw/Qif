@@ -1,3 +1,5 @@
+Have to check : http://cpansearch.perl.org/src/MMCGILLIS/Finance-QIF-2.04/lib/Finance/QIF.pm
+
 
 Source : http://web.intuit.com/support/quicken/docs/d_qif.html
 Quicken Interchange Format (QIF) files
@@ -88,8 +90,6 @@ R	Tax schedule information
 ^	End of entry
 
 
-
-
 Items for a Class List
 Field	Indicator Explanation
 N	Class name
@@ -128,16 +128,9 @@ $	Dollar amount of split
 ^	End of entry
 
 
-
-
-
-
-
-
 Examples of QIF files
 
 Normal Transactions Example
-
 Transaction Item	Comment (not in file)
 !Type:Bank	Header
 D6/ 1/94	Date
@@ -166,8 +159,8 @@ A	Address (line 4)
 A	Address (line 5)
 A	Address (line 6)
 ^	End of transaction
-Investment Example
 
+Investment Example
 Transaction Item	Comment (not in file)
 !Type:Invst	Header line
 D8/25/93	Date
@@ -189,8 +182,8 @@ MEst. price as of 8/25/93	Memo
 L[CHECKING]	Account for transfer
 $100.00	Amount transferred
 ^	End of transaction
-Memorized List Example
 
+Memorized List Example
 Transaction Item	Comment (not in file)
 !Type:Memorized	Header line
 T-50.00	Amount
@@ -199,4 +192,537 @@ MRent	Memo
 KC	Check transaction
 ^	End of transaction
 	 
+
+Source :http://www.beansmart.com/quicken/Converting-Fidelity-CVS-to-QIF-or-OFX-for-Quicken-2007-5296-1.htm
+
+Collected over the years:
+
+ QUICKEN INTERCHANGE FORMAT (QIF)
+
+Overview
+You can export transactions from a Quicken account register to a
+specially formatted text file and import data to a Quicken register
+from the same type of text file.  This text file MUST be formatted
+as a Quicken Interchange Format (QIF) file.  For Quicken to
+translate data from a text file into the Quicken register as
+transactions, the data must be in the QIF format.
+
+Procedure
+Basic Procedures:
+* Each transaction must end with a * symbol
+* Each item in the transaction must appear on a separate line
+* When Quicken exports an account register, it adds a line at the
+ top of the file that identifies the type of account.  Here are
+ the header lines Quicken adds to the exported files:
+
+  !Type:Bank
+  !Type:Cash
+  !Type:CCard
+  !Type:Invst
+  !Type:Oth A
+  !Type:Oth L
+
+* You can add a line to a file to be imported into Quicken account
+ to force Quicken to import all transfers, regardless of whether
+ Ignore Transfers is selected when the file is imported.  Use a
+ test editor or word processor to put the following line right
+ after the header line at the top of the file:
+
+  !Option:AllXfr
+
+
+Items for non-investment accounts
+
+Each item in a bank, cash, credit card, other liability, or other
+asset account must begin with a letter that indicates the field in
+the Quicken register.  The non-split items can be in any sequence:
+
+ D Date
+ T Amount
+ C Cleared status
+ N Number(check or reference number)
+ P Payee
+ A Address (up to five lines; the sixth line is an optional
+  message)
+ L Category (Category/Subcategory/Transfer/Class
+ S Category in split (Category/Transfer/Class)
+ E Memo in split
+ $ Dollar amount of split
+ ^ End of the entry
+
+Items for investment accounts
+ D Date
+ N Action
+ Y Security
+ I Price
+ Q Quantity (Number of shares or split ratio)
+ C Cleared Status
+ P. Text in the first line for transfers and reminders
+ M Memo
+ O Commission
+ L Account for the transfer
+ $ Amount transferred
+ ^ End of the entry
+
+Repeat the S, E, and $ lines as many times as needed for additional
+items in a split.  If an item is omitted from the transaction in the
+QIF file, Quicken treats it as a blank item.
+
+
+
+                              Examples of QIF files
+
+Transaction Item    Comment (not in file)
+!Type:Bank          Header line
+D7/8/93             Date
+T-1000.0            Transaction amount
+CX                  Status in Cleared column
+N255                Check Number
+PFranks Plumbing    Payee
+AFranks Plumbing    Address (first line)
+A1234 Main St.      Address (second line)
+ASan Jose, CA 95123 Address (third line)
+LHome Maint         Category/Subcategory/Transfer/Class
+^      End of the transaction
+D7/8/93             Date
+T-75.46             Transaction amount
+CX                  Status in Cleared column
+N256                Check Number
+PWalts Drug         Payee
+LSupplies           First Category/Subcategory/Class in
+                    the split
+EOffices Supplies   First memo in the split
+$-51.00             First amount in the split
+SMedicine           Second Category/Subcategory/Class in the
+                    split
+EPrescription Drugs Second memo in the split
+$-24.46             Second amount in the split
+^      End of the transaction
+
+Transaction Item    Comment (not in file)
+!Type:Bank          Header line
+D8/25/93            Date
+NShrsIn             Action (optional)
+Yibm4               Security
+I11.260             Price
+Q88.81              Quantity
+CX                  Cleared Status
+T1,000.00           Amount
+MOpening Balance    Memo
+^       End of the transaction
+D8/25/93            Date
+NBuyX               Action
+Yibm4               Security
+I11.030             Price
+Q9.066              Quantity
+T100.00             Amount
+MEst. price as of 8/25/93
+                    Memo
+L[CHECKING]         Account for transfer
+$100.00             Amount transferred
+^       End of the transaction
+
+At Intuit, we highly recommend that you backup your Quicken data
+regularly to protect against loss due to unexpected power failures,
+diskette damage or other mishaps.  If you need further assistance,
+you may contact Intuit Technical Support at (415) 858-6050, Monday
+through Friday between 5 am and 5 pm Pacific time.
+
+--- Another entry of this info ---
+Export headers for QIF files
+
+Export headers in QIF files divide separate groups of items such
+as accounts or transactions. They can also signify options. Export
+headers follow the general format:
+
+!<Header name>:<Export type>
+
+Exportable accounts
+
+The table below lists the types of accounts that can be exported
+and their export headers:
+
+Export Header Type of account
+!Type:Bank       Bank account
+!Type:Cash       Cash account
+!Type:CCard       Credit card account
+!Type:Invst       Investment account
+!Type:Oth A       Asset account
+!Type:Oth L       Liability account
+!Type:Invoice Invoice account (business subtype of Oth A)
+!Type:Tax       Tax account (business subtype of Oth L)
+!Type:Bill       Bill account (business subtype of Oth L)
+An account header is followed by transaction records if there are
+any within the selected date range.
+
+Exportable lists
+
+The table below lists the types of lists that can be exported and
+their export headers:
+
+Export Header Type of list
+!Type:Class       Class list
+!Type:Cat       Category list
+!Type:Memorized Memorized transactions list
+!Type:Security Securities list
+!Type:Prices Security Prices list
+!Type:Budget Budgets list
+!Type:Invitem Invoice items list
+!Type:Template Business templates list
+A list header is followed by records of the selected list type.
+
+Options headers
+
+Below is the option you can use, and its action:
+
+Export Header Meaning
+!Option:AllXfr Forces transfers to be imported, even if Ignore
+Transfers is set.
+Account headers
+
+Export Header     Meaning
+!Option:AutoSwitch    Start of the Accounts list
+!Account           Beginning of accounts list records
+!Clear:AutoSwitch     End of the Accounts list
+!Account is followed by either a list of account records for the
+Accounts list or a single account record for the selected account
+transactions.
+
+Copyright (c) 1999 Intuit, Inc.
+
+
+
+Identifiers for non-investment accounts
+
+Use these letters to identify specific items in a non-investment
+430 No such article
+Howard Kaikow wrote:
+
+Collected over the years:
+
+ QUICKEN INTERCHANGE FORMAT (QIF)
+
+Overview
+You can export transactions from a Quicken account register to a
+specially formatted text file and import data to a Quicken register
+from the same type of text file.  This text file MUST be formatted
+as a Quicken Interchange Format (QIF) file.  For Quicken to
+translate data from a text file into the Quicken register as
+transactions, the data must be in the QIF format.
+
+Procedure
+Basic Procedures:
+* Each transaction must end with a * symbol
+* Each item in the transaction must appear on a separate line
+* When Quicken exports an account register, it adds a line at the
+ top of the file that identifies the type of account.  Here are
+ the header lines Quicken adds to the exported files:
+
+  !Type:Bank
+  !Type:Cash
+  !Type:CCard
+  !Type:Invst
+  !Type:Oth A
+  !Type:Oth L
+
+* You can add a line to a file to be imported into Quicken account
+ to force Quicken to import all transfers, regardless of whether
+ Ignore Transfers is selected when the file is imported.  Use a
+ test editor or word processor to put the following line right
+ after the header line at the top of the file:
+
+  !Option:AllXfr
+
+
+Items for non-investment accounts
+
+Each item in a bank, cash, credit card, other liability, or other
+asset account must begin with a letter that indicates the field in
+the Quicken register.  The non-split items can be in any sequence:
+
+ D Date
+ T Amount
+ C Cleared status
+ N Number(check or reference number)
+ P Payee
+ A Address (up to five lines; the sixth line is an optional
+  message)
+ L Category (Category/Subcategory/Transfer/Class
+ S Category in split (Category/Transfer/Class)
+ E Memo in split
+ $ Dollar amount of split
+ ^ End of the entry
+
+Items for investment accounts
+ D Date
+ N Action
+ Y Security
+ I Price
+ Q Quantity (Number of shares or split ratio)
+ C Cleared Status
+ P. Text in the first line for transfers and reminders
+ M Memo
+ O Commission
+ L Account for the transfer
+ $ Amount transferred
+ ^ End of the entry
+
+Repeat the S, E, and $ lines as many times as needed for additional
+items in a split.  If an item is omitted from the transaction in the
+QIF file, Quicken treats it as a blank item.
+
+
+
+                              Examples of QIF files
+
+Transaction Item    Comment (not in file)
+!Type:Bank          Header line
+D7/8/93             Date
+T-1000.0            Transaction amount
+CX                  Status in Cleared column
+N255                Check Number
+PFranks Plumbing    Payee
+AFranks Plumbing    Address (first line)
+A1234 Main St.      Address (second line)
+ASan Jose, CA 95123 Address (third line)
+LHome Maint         Category/Subcategory/Transfer/Class
+^      End of the transaction
+D7/8/93             Date
+T-75.46             Transaction amount
+CX                  Status in Cleared column
+N256                Check Number
+PWalts Drug         Payee
+LSupplies           First Category/Subcategory/Class in
+                    the split
+EOffices Supplies   First memo in the split
+$-51.00             First amount in the split
+SMedicine           Second Category/Subcategory/Class in the
+                    split
+EPrescription Drugs Second memo in the split
+$-24.46             Second amount in the split
+^      End of the transaction
+
+Transaction Item    Comment (not in file)
+!Type:Bank          Header line
+D8/25/93            Date
+NShrsIn             Action (optional)
+Yibm4               Security
+I11.260             Price
+Q88.81              Quantity
+CX                  Cleared Status
+T1,000.00           Amount
+MOpening Balance    Memo
+^       End of the transaction
+D8/25/93            Date
+NBuyX               Action
+Yibm4               Security
+I11.030             Price
+Q9.066              Quantity
+T100.00             Amount
+MEst. price as of 8/25/93
+                    Memo
+L[CHECKING]         Account for transfer
+$100.00             Amount transferred
+^       End of the transaction
+
+At Intuit, we highly recommend that you backup your Quicken data
+regularly to protect against loss due to unexpected power failures,
+diskette damage or other mishaps.  If you need further assistance,
+you may contact Intuit Technical Support at (415) 858-6050, Monday
+through Friday between 5 am and 5 pm Pacific time.
+
+--- Another entry of this info ---
+Export headers for QIF files
+
+Export headers in QIF files divide separate groups of items such
+as accounts or transactions. They can also signify options. Export
+headers follow the general format:
+
+!<Header name>:<Export type>
+
+Exportable accounts
+
+The table below lists the types of accounts that can be exported
+and their export headers:
+
+Export Header Type of account
+!Type:Bank       Bank account
+!Type:Cash       Cash account
+!Type:CCard       Credit card account
+!Type:Invst       Investment account
+!Type:Oth A       Asset account
+!Type:Oth L       Liability account
+!Type:Invoice Invoice account (business subtype of Oth A)
+!Type:Tax       Tax account (business subtype of Oth L)
+!Type:Bill       Bill account (business subtype of Oth L)
+An account header is followed by transaction records if there are
+any within the selected date range.
+
+Exportable lists
+
+The table below lists the types of lists that can be exported and
+their export headers:
+
+Export Header Type of list
+!Type:Class       Class list
+!Type:Cat       Category list
+!Type:Memorized Memorized transactions list
+!Type:Security Securities list
+!Type:Prices Security Prices list
+!Type:Budget Budgets list
+!Type:Invitem Invoice items list
+!Type:Template Business templates list
+A list header is followed by records of the selected list type.
+
+Options headers
+
+Below is the option you can use, and its action:
+
+Export Header Meaning
+!Option:AllXfr Forces transfers to be imported, even if Ignore
+Transfers is set.
+Account headers
+
+Export Header     Meaning
+!Option:AutoSwitch    Start of the Accounts list
+!Account           Beginning of accounts list records
+!Clear:AutoSwitch     End of the Accounts list
+!Account is followed by either a list of account records for the
+Accounts list or a single account record for the selected account
+transactions.
+
+Copyright (c) 1999 Intuit, Inc.
+
+
+
+Identifiers for non-investment accounts
+
+Use these letters to identify specific items in a non-investment
+account transaction. Each line in the transaction must begin with
+one of these letters:
+
+Letter What it means
+D Date
+T Amount of transaction
+U Amount of transaction (higher possible value than T)
+C Cleared status
+N Number (check or reference)
+P Payee/description
+M Memo
+A Address (up to 5 lines; 6th line is an optional message)
+L Category/class or transfer/class
+S Category in split (category/class or transfer/class)
+E Memo in split
+$ Dollar amount of split
+% Percentage of split if percentages are used
+F Reimbursable business expense flag
+^ End of entry
+Repeat the S, E, % and $ lines as many times as necessary for
+additional items in a split. If an item is omitted from the
+transaction in the QIF file, Quicken treats it as a blank item.
+
+Copyright (c) 1999 Intuit, Inc.
+
+
+Identifiers for investment accounts
+
+Use these letters to identify specific items in an investment
+account transaction. Each line in the transaction must begin with
+one of these letters:
+
+   Letter What it means
+D Date (optional)
+N Action
+Y Security
+I Price
+Q Quantity (# of shares or split ratio)
+C Cleared status
+P 1st line text for transfers/reminders
+M Memo
+O Commission
+L For MiscIncX or MiscExpX actions:Category/class followed by
+|transfer/class of the transaction
+ For MiscInc or MiscExp actions:Category/class of the transaction
+ For all other actions:Transfer/class of the transactions
+T Amount of transaction
+U Amount of transaction (higher possible value than T)
+$ Amount transferred
+^ End of entry
+If an item is omitted from the transaction in the QIF file,
+Quicken treats it as a blank item.
+
+Copyright (c) 1999 Intuit, Inc.
+
+
+
+Identifiers for memorized transaction items
+
+Use these letters to identify specific items in a memorized
+transaction. Each line in the transaction must begin with one of
+these letters or combination of letters:
+
+Memorized transaction identifiers
+
+The table below lists the identifiers for Memorized Transaction
+items and what they mean:
+
+Letter What it means
+   K Transaction type
+   KI Memorized investment transaction
+   KE Memorized regular electronic payment transaction
+   KC Memorized regular write checks transaction
+   KP Memorized regular payment transaction
+   KD Memorized regular deposit transaction
+   Q Quantity (number of new shares for a split)
+   R Quantity (number of old shares for a split)
+You can also use the identifiers for investment and non-investment
+transactions, as necessary. Electronic payments, write checks,
+payments, and deposits are regular transaction types.
+Memorized loan payment also supports the following identifiers:
+
+Letter What it means
+   1 First payment date
+   2 Total years of the loan
+   3 Number of payments made
+   4 Payment periods per year
+   5 Loan rate
+   6 Current balance of the loan
+   7 Original balance of the loan
+
+Copyright (c) 1999 Intuit, Inc.
+
+
+Identifiers for business transaction items (Home & Business)
+
+Use these letters to identify specific business-related items in a
+non-investment account transaction. Each line in the transaction
+must begin with one of these letter combinations:
+
+Letter What it means
+XI Invoice type
+XE Payment due date
+XU Number of payments
+XD Date for a payment
+XY Payment amount
+XC Sales tax Category
+XR Sales tax rate
+XT Sales Tax amount
+XP PO number
+XA Shipping/Vendor address (up to 5 lines)
+XM Customer message
+XK Default split class
+XN Name of invoice item
+X$ Price per item of a split
+X# Number of items in a split
+XS Split item description
+XFT Taxable split item flag
+^ End of entry
+Repeat the XS, XK, X Ft, X# and X$ lines as many times as
+necessary for additional items in a split. If an item is omitted
+from the transaction in the QIF file, Quicken treats it as a blank
+item.
+
+Copyright (c) 1999 Intuit, Inc.
+
+
 

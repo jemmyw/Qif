@@ -2,21 +2,38 @@ require 'spec/spec_helper'
 
 describe Qif::Transaction do
   describe '::read' do
-    it 'should return a new transaction' do
-      date = Time.now
+    it 'should return a new transaction with all attributes set' do
       t = Qif::Transaction.read(
-        'D' => date,
-        'T' => '10.0',
-        'L' => 'Credit',
-        'M' => 'Supermarket',
-        'P' => 'abcde'
+        'D' => Time.parse('06/ 1/94'),
+        'T' => '-1000.00'.to_f,
+        'C' => 'X',
+        'N' => '1005',
+        'P' => 'Bank Of Mortgage',
+        'M' => 'aMemo',
+        'L' => 'aCategory',
+# TODO Support correctly splits with an array of hash
+#        'S' => '[linda]
+#Mort Int',
+#        'E' => 'Cash',
+#        '$' => '-253.64
+#=746.36',
+        'A' => 'P.O. Box 27027
+Tucson, AZ
+85726',
+        '^' => nil
       )
+
       t.should be_a(Qif::Transaction)
-      t.date.should == date
-      t.amount.should == 10.0
-      t.name.should == 'Credit'
-      t.description.should == 'Supermarket'
-      t.reference.should == 'abcde'
+      t.date.should == Time.mktime(1994,6,1)
+      t.amount.should == -1000.00
+      t.status.should == 'X'
+      t.number.should == '1005'
+      t.payee.should == 'Bank Of Mortgage'
+      t.memo.should == 'aMemo'
+      t.category.should == 'aCategory'
+      t.adress.should == 'P.O. Box 27027
+Tucson, AZ
+85726'
     end
     
     it 'should return nil if the date does not respond to strftime' do
@@ -29,9 +46,9 @@ describe Qif::Transaction do
       @instance = Qif::Transaction.new(
         :date => Time.mktime(2010, 1, 2),
         :amount => -10.0,
-        :name => 'Debit',
-        :description => 'Supermarket',
-        :reference => 'abcde'
+        :category => 'Debit',
+        :memo => 'Supermarket',
+        :payee => 'abcde'
       )
     end
     
@@ -44,7 +61,7 @@ describe Qif::Transaction do
       @instance.to_s.should include('T-10.00')
     end
     
-    it 'should put the name in L' do
+    it 'should put the category in L' do
       @instance.to_s.should include('LDebit')
     end
     

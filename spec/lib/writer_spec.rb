@@ -27,7 +27,7 @@ describe Qif::Writer do
       date = Time.now
       
       Qif::Writer.open(@path) do |writer|
-        writer << Qif::Transaction.new(:date => date, :amount => 10.0, :name => 'Credit')
+        writer << Qif::Transaction.new(:date => date, :amount => 10.0, :category => 'Credit')
       end
       
       @buffer.should include('D%s' % date.strftime('%d/%m/%Y'))
@@ -50,7 +50,7 @@ describe Qif::Writer do
     
     it 'should write any pending transactions' do
       date = Time.now
-      @instance << Qif::Transaction.new(:date => date, :amount => 10.0, :name => 'Credit')
+      @instance << Qif::Transaction.new(:date => date, :amount => 10.0, :category => 'Credit')
       
       @buffer.should_not include('D%s' % date.strftime('%d/%m/%Y'))
       @instance.write

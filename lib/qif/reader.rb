@@ -22,16 +22,18 @@ module Qif
 "!Type:Oth A" => "Asset account transactions",
 "!Type:Oth L" => "Liability account transactions"}
 
+    class UnknownAccountType < StandardError; end
+    
     # Create a new Qif::Reader object. The data argument must be
     # either an IO object or a String containing the Qif file data.
     #
-    # The format argument specifies the date format in the file. This
-    # defaults to 'dd/mm/yyyy', but also accepts 'mm/dd/yyyy'.
-    def initialize(data, format = 'dd/mm/yyyy')
-      @format = DateFormat.new(format)
+    # The optional format argument specifies the date format in the file. Giving a format will force it, otherwise the format will guissed reading the transactions in the file, this
+    # defaults to 'dd/mm/yyyy' if guessing method fails.
+    def initialize(data, format = nil)
       @data = data.respond_to?(:read) ? data : StringIO.new(data.to_s)
+      @format = DateFormat.new(format || guess_date_format || 'dd/mm/yyyy')
       read_header
-      raise("Unknown account type Should be one of followings :\n#{SUPPORTED_ACCOUNTS.keys.inspect}") unless SUPPORTED_ACCOUNTS.keys.collect(&:downcase).include? @header.downcase
+      raise(UnknownAccountType, "Unknown account type. Should be one of followings :\n#{SUPPORTED_ACCOUNTS.keys.inspect}") unless SUPPORTED_ACCOUNTS.keys.collect(&:downcase).include? @header.downcase
       reset
     end
     
@@ -64,7 +66,22 @@ module Qif
       transaction_cache.size
     end
     alias length size
-  
+
+    # Guess the file format of dates, reading the beginning of file, or return nil if no dates are found (?!).
+    def guess_date_format
+      begin
+        line = @data.gets
+        break if line.nil?
+        date = line.strip.scan(/^D(\d{1,2}).(\d{1,2}).(\d{2,4})/).flatten
+        if date.count == 3 
+          guessed_format = date[0].to_i.between?(1, 12) ? (date[1].to_i.between?(1, 12) ? nil : 'mm/dd') : 'dd/mm'
+          guessed_format += '/' + 'y'*date[2].length if guessed_format
+        end
+      end until guessed_format
+      @data.rewind
+      guessed_format
+    end
+
     private
   
     def read_all_transactions
@@ -97,7 +114,7 @@ module Qif
         @data.readline
       end
     end
-  
+
     def read_header
       headers = []
       begin
@@ -130,9 +147,10 @@ module Qif
         line = @data.readline
         key = line[0,1]
         record[key] = record.key?(key) ? record[key] + "\n" + line[1..-1].strip : line[1..-1].strip
-        if date = @format.parse(record[key])
-          record[key] = date
-        end
+
+        record[key].sub!(',','') if %w(T U $).include? key
+        record[key] = @format.parse(record[key]) if %w(D).include? key
+
       end until line =~ /^\^/
       record
       rescue EOFError => e
