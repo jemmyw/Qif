@@ -44,7 +44,7 @@ module Qif
         next unless current = instance_variable_get("@#{k}")
         field = v.keys
         case current.class.to_s
-          when "Time"
+        when "Time", "Date", "DateTime"
             "#{field}#{DateFormat.new(format).format(current)}"
           when "Float"
             "#{field}#{'%.2f'%current}"
