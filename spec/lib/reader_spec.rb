@@ -55,7 +55,9 @@ describe Qif::Reader do
   it 'should reject the wrong account type !Type:Invst and raise an UnknownAccountType exception' do
     expect{ Qif::Reader.new(open('spec/fixtures/quicken_investment_account.qif')) }.to raise_error(Qif::Reader::UnknownAccountType)
   end
-
+  it 'should reject the wrong file and raise an UnrecognizedData exception' do
+    expect{ Qif::Reader.new(open('spec/fixtures/not_a_QIF_file.txt')) }.to raise_error(Qif::Reader::UnrecognizedData)
+  end
   it 'should guess the date format dd/mm/yyyy' do
     @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'))
     @instance.guess_date_format.should == 'dd/mm/yyyy'

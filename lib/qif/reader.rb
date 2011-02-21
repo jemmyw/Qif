@@ -23,7 +23,7 @@ module Qif
 "!Type:Oth L" => "Liability account transactions"}
 
     class UnknownAccountType < StandardError; end
-    
+    class UnrecognizedData < StandardError; end
     # Create a new Qif::Reader object. The data argument must be
     # either an IO object or a String containing the Qif file data.
     #
@@ -33,6 +33,7 @@ module Qif
       @data = data.respond_to?(:read) ? data : StringIO.new(data.to_s)
       @format = DateFormat.new(format || guess_date_format || 'dd/mm/yyyy')
       read_header
+      raise(UnrecognizedData, "Provided data doesn't seems to represent a QIF file") unless @header
       raise(UnknownAccountType, "Unknown account type. Should be one of followings :\n#{SUPPORTED_ACCOUNTS.keys.inspect}") unless SUPPORTED_ACCOUNTS.keys.collect(&:downcase).include? @header.downcase
       reset
     end
@@ -128,6 +129,7 @@ module Qif
       unless line =~ /^\^/
         rewind_to @data.lineno - 1
       end
+      headers
     end
   
     def read_transaction
