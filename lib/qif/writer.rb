@@ -38,6 +38,10 @@ module Qif
       @type = type
       @format = format
       @transactions = []
+      if block_given?
+        yield self
+        self.write
+      end
     end
     
     # Add a transaction for writing
