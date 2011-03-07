@@ -18,11 +18,9 @@ module Qif
     
     # Open a qif file for writing and yield a Qif::Writer instance.
     # For parameters see #new.
-    def self.open(path, type = 'Bank', format = 'dd/mm/yyyy')
+    def self.open(path, type = 'Bank', format = 'dd/mm/yyyy', &block)
       File.open(path, 'w') do |file|
-        writer = self.new(file, type, format)
-        yield writer
-        writer.write
+        self.new(file, type, format, &block)
       end
     end
     
@@ -38,6 +36,7 @@ module Qif
       @type = type
       @format = format
       @transactions = []
+      
       if block_given?
         yield self
         self.write

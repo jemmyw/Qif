@@ -26,11 +26,14 @@ module Qif
 
     class UnknownAccountType < StandardError; end
     class UnrecognizedData < StandardError; end
+
     # Create a new Qif::Reader object. The data argument must be
     # either an IO object or a String containing the Qif file data.
     #
-    # The optional format argument specifies the date format in the file. Giving a format will force it, otherwise the format will guissed reading the transactions in the file, this
-    # defaults to 'dd/mm/yyyy' if guessing method fails.
+    # The optional format argument specifies the date format in the file. 
+    # Giving a format will force it, otherwise the format will guissed 
+    # reading the transactions in the file, this defaults to 'dd/mm/yyyy' 
+    # if guessing method fails.
     def initialize(data, format = nil)
       @data = data.respond_to?(:read) ? data : StringIO.new(data.to_s)
       @format = DateFormat.new(format || guess_date_format || 'dd/mm/yyyy')
