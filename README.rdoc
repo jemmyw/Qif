@@ -8,7 +8,7 @@
 
 === DOCUMENTATION:
 
-* http://rdoc.info/gems/qif/0.2/frames
+* http://rdoc.info/github/jemmyw/Qif/master/frames
 
 === EXAMPLE:
 
