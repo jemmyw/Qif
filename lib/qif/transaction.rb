@@ -3,26 +3,25 @@ require 'qif/date_format'
 module Qif
   # The Qif::Transaction class represents transactions in a qif file.
   class Transaction
-
     SUPPORTED_FIELDS = {
-:date => {"D" => "Date"},
-:amount => {"T" => "Amount"},
-:status => {"C" => "Cleared status"},
-:number => {"N" => "Num (check or reference number)"},
-:payee => {"P" => "Payee"},
-:memo => {"M" => "Memo"},
-:adress => {"A" => "Address (up to five lines; the sixth line is an optional message)"},
-:category => {"L" => "Category (Category/Subcategory/Transfer/Class)"},
-:split_category => {"S" => "Category in split (Category/Transfer/Class)"},
-:split_memo => {"E" => "Memo in split"},
-:split_amount => {"$" => "Dollar amount of split"},
-:end => {"^" => "End of entry"}
-}
-      DEPRECATION_FIELDS = {
-:reference => :payee,
-:name => :category,
-:description => :memo
-}
+      :date           => {"D" => "Date"                                                              },
+      :amount         => {"T" => "Amount"                                                            },
+      :status         => {"C" => "Cleared status"                                                    },
+      :number         => {"N" => "Num (check or reference number)"                                   },
+      :payee          => {"P" => "Payee"                                                             },
+      :memo           => {"M" => "Memo"                                                              },
+      :adress         => {"A" => "Address (up to five lines; the sixth line is an optional message)" },
+      :category       => {"L" => "Category (Category/Subcategory/Transfer/Class)"                    },
+      :split_category => {"S" => "Category in split (Category/Transfer/Class)"                       },
+      :split_memo     => {"E" => "Memo in split"                                                     },
+      :split_amount   => {"$" => "Dollar amount of split"                                            },
+      :end            => {"^" => "End of entry"                                                      }
+    }
+    DEPRECATION_FIELDS = {
+      :reference   => :payee,
+      :name        => :category,
+      :description => :memo
+    }
     SUPPORTED_FIELDS.keys.each{|s| attr_accessor s}
 
     def self.read(record) #::nodoc
@@ -31,12 +30,12 @@ module Qif
       record.reject{|k,v| v.nil?}.each{|k,v| record[k] = record[k].to_f if k.to_s.include? "amount"}
       Transaction.new record
     end
-    
+
     def initialize(attributes = {})
       deprecate_attributes!(attributes)
       SUPPORTED_FIELDS.keys.each{|s| instance_variable_set("@#{s.to_s}", attributes[s])}
     end
-    
+
     # Returns a representation of the transaction as it
     # would appear in a qif file.
     def to_s(format = 'dd/mm/yyyy')
@@ -45,13 +44,13 @@ module Qif
         field = v.keys
         case current.class.to_s
         when "Time", "Date", "DateTime"
-            "#{field}#{DateFormat.new(format).format(current)}"
-          when "Float"
-            "#{field}#{'%.2f'%current}"
-          when "String"
-            current.split("\n").collect {|x| "#{field}#{x}" }
-          else
-            "#{field}#{current}"
+          "#{field}#{DateFormat.new(format).format(current)}"
+        when "Float"
+          "#{field}#{'%.2f'%current}"
+        when "String"
+          current.split("\n").collect {|x| "#{field}#{x}" }
+        else
+          "#{field}#{current}"
         end
       end.flatten.compact.join("\n")
     end
