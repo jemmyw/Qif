@@ -1,3 +1,5 @@
+v1.1.1 Ruby 1.9 support. [jemmyw, allolex]
+
 v1.1.0 Added block version of new method to writer and error checking on
 files. [elmatou]
 
