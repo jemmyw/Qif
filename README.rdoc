@@ -18,6 +18,35 @@
     puts [transaction.name, transaction.description, transaction.amount].join(", ")
   end
 
+=== CSV conversion example
+
+  # Ruby 1.9.2
+  require 'csv'
+  require 'qif'
+
+  # file.csv is the source
+  #   [0] Date in dd/mm/yyyy,
+  #   [1] memo field,
+  #   [2] payee,
+  #   [3] debit amount,
+  #   [4] credit amount
+  #   Ignore other fields
+  basefile = 'file'
+  bank_input = CSV.read("#{file}.csv")
+
+  Qif::Writer.open("#{file}.qif", type = 'Bank', format = 'dd/mm/yyyy') do |qif|
+    bank_input.each do |row|
+      # Fix the values depending on what state your CSV data is in
+      row.each { |value| value.to_s.gsub!(/^\s+|\s+$/,'') }
+      qif << Qif::Transaction.new(
+        :date         => row[0],
+        :amount       => row[3].empty? ? row[4].to_f : -row[3].to_f,
+        :memo         => row[1],
+        :payee        => row[2]
+      )
+    end
+  end
+
 === LICENSE:
 
 Copyright (c) 2010 Jeremy Wells
