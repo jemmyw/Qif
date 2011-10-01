@@ -31,7 +31,7 @@ module Qif
     # either an IO object or a String containing the Qif file data.
     #
     # The optional format argument specifies the date format in the file. 
-    # Giving a format will force it, otherwise the format will guissed 
+    # Giving a format will force it, otherwise the format will guessed 
     # reading the transactions in the file, this defaults to 'dd/mm/yyyy' 
     # if guessing method fails.
     def initialize(data, format = nil)
