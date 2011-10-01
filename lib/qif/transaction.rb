@@ -41,7 +41,7 @@ module Qif
     def to_s(format = 'dd/mm/yyyy')
       SUPPORTED_FIELDS.collect do |k,v|
         next unless current = instance_variable_get("@#{k}")
-        field = v.keys
+        field = v.keys.first
         case current.class.to_s
         when "Time", "Date", "DateTime"
           "#{field}#{DateFormat.new(format).format(current)}"
