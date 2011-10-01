@@ -13,7 +13,19 @@ module Qif
       order = date_order
       
       if match = regex.match(date)
-        Time.mktime(*%w(y m d).map{|t| match[order.index(t) + 1].to_i })
+				year = match[order.index('y')+1].to_i
+			
+				if year < 100
+					start_year = Time.now.year - 50
+					start_cent = (start_year/100).to_i*100
+					if year > start_year-start_cent
+						year += start_cent
+					else
+						year += ((Time.now.year/100).to_i*100)
+					end
+				end
+        
+				Time.mktime(year, *%w(m d).map{|t| match[order.index(t) + 1].to_i })
       end
     end
     
