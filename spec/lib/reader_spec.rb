@@ -1,4 +1,4 @@
-require 'spec/spec_helper'
+require 'spec_helper'
 
 shared_examples_for "3 record files" do
   it 'should have 3 records' do

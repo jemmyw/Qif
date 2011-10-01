@@ -1,10 +1,10 @@
-require 'spec/spec_helper'
+require 'spec_helper'
 
 describe Qif::Transaction do
   describe '::read' do
     it 'should return a new transaction with all attributes set' do
       t = Qif::Transaction.read(
-        'D' => Time.parse('06/ 1/94'),
+        'D' => Time.parse('1994-06-01'),
         'T' => '-1000.00'.to_f,
         'C' => 'X',
         'N' => '1005',
