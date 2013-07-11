@@ -2,10 +2,10 @@ require 'time'
 
 module Qif
   class DateFormat
-    attr_reader :format
+    attr_reader :conversion_format
 
     def initialize(format = 'dd/mm/yyyy')
-      @format = format
+      @conversion_format = format
     end
 
     def parse(date)
@@ -36,11 +36,11 @@ module Qif
     private
 
     def date_order
-      %w(d m y).sort{|a,b| @format.index(a) <=> @format.index(b) }
+      %w(d m y).sort{|a,b| @conversion_format.index(a) <=> @conversion_format.index(b) }
     end
 
     def convert_format_to_strftime
-      format = @format.dup
+      format = @conversion_format.dup
       format.gsub!(/d{1,2}/, '%d')
       format.gsub!(/m{1,2}/, '%m')
       format.gsub!('yyyy', '%Y')
@@ -49,7 +49,7 @@ module Qif
     end
 
     def convert_format_to_regex
-      format = @format.dup
+      format = @conversion_format.dup
       format.gsub!('dd'   , '([0-3][0-9])')
       format.gsub!('d'    , '([0-3]?[0-9])')
       format.gsub!('mm'   , '([0-1][0-9])')
