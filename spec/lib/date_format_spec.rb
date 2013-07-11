@@ -28,4 +28,10 @@ describe Qif::DateFormat do
     time = reader.parse('18/9/10')
     time.should == Time.mktime(2010, 9, 18)
   end
+
+  it "should work with separators other than /, like '" do
+    reader = Qif::DateFormat.new("m/d'yy")
+    time = reader.parse("9/8'10")
+    time.should == Time.mktime(2010, 9, 8)
+  end
 end

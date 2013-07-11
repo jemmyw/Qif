@@ -38,10 +38,11 @@ shared_examples_for "3 record files" do
 end
 
 describe Qif::Reader do
-  %w(dd/mm/yyyy mm/dd/yyyy dd/mm/yy mm/dd/yy d/m/yy).each do |format|
+  %w(dd/mm/yyyy mm/dd/yyyy dd/mm/yy mm/dd/yy d/m/yy m/d'yy).each do |format|
     context "when format is #{format}" do
       it_behaves_like "3 record files" do
-        let(:instance) { Qif::Reader.new(open('spec/fixtures/3_records_%s.qif' % format.gsub('/', '')).read, format) }
+        file_name = 'spec/fixtures/3_records_%s.qif' % format.gsub('/', '').gsub("'", '')
+        let(:instance) { Qif::Reader.new(open(file_name).read, format) }
       end
     end
   end
