@@ -3,3 +3,4 @@ pkg
 .rvmrc
 .bundle
 *.gem
+*.swp
