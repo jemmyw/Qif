@@ -38,7 +38,7 @@ shared_examples_for "3 record files" do
 end
 
 describe Qif::Reader do
-  %w(dd/mm/yyyy mm/dd/yyyy dd/mm/yy mm/dd/yy).each do |format|
+  %w(dd/mm/yyyy mm/dd/yyyy dd/mm/yy mm/dd/yy d/m/yy).each do |format|
     context "when format is #{format}" do
       it_behaves_like "3 record files" do
         let(:instance) { Qif::Reader.new(open('spec/fixtures/3_records_%s.qif' % format.gsub('/', '')).read, format) }
@@ -58,6 +58,7 @@ describe Qif::Reader do
   it 'should reject the wrong file and raise an UnrecognizedData exception' do
     expect{ Qif::Reader.new(open('spec/fixtures/not_a_QIF_file.txt')) }.to raise_error(Qif::Reader::UnrecognizedData)
   end
+
   it 'should guess the date format dd/mm/yyyy' do
     @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'))
     @instance.guess_date_format.should == 'dd/mm/yyyy'

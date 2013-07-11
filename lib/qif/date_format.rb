@@ -41,8 +41,8 @@ module Qif
     
     def convert_format_to_strftime
       format = @format.dup
-      format.gsub!('dd', '%d')
-      format.gsub!('mm', '%m')
+      format.gsub!(/d{1,2}/, '%d')
+      format.gsub!(/m{1,2}/, '%m')
       format.gsub!('yyyy', '%Y')
       format.gsub!('yy', '%y')
       format
@@ -50,10 +50,12 @@ module Qif
     
     def convert_format_to_regex
       format = @format.dup
-      format.gsub!('dd', '([0-3][0-9])')
-      format.gsub!('mm', '([0-1][0-9])')
-      format.gsub!('yyyy', '([1-2][0-9]{3})')
-      format.gsub!('yy', '([0-9]{2})')
+      format.gsub!('dd'   , '([0-3][0-9])')
+      format.gsub!('d'    , '([0-3]?[0-9])')
+      format.gsub!('mm'   , '([0-1][0-9])')
+      format.gsub!('m'    , '([0-1]?[0-9])')
+      format.gsub!('yyyy' , '([1-2][0-9]{3})')
+      format.gsub!('yy'   , '([0-9]{2})')
       
       /#{format}/mi
     end
