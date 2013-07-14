@@ -1,3 +1,5 @@
+{<img src="https://travis-ci.org/jemmyw/Qif.png?branch=master" alt="Build Status" />}[https://travis-ci.org/jemmyw/Qif]
+
 = Library for reading Quicken Interchange Format (QIF) files
 
 * http://github.com/jemmyw/Qif
