@@ -15,6 +15,8 @@ module Qif
   #   end
   class Reader
     include Enumerable
+
+    attr_reader :index
   
     SUPPORTED_ACCOUNTS = {
       "!Type:Bank" => "Bank account transactions",
@@ -78,17 +80,29 @@ module Qif
       begin
         line = @data.gets
         break if line.nil?
-        date = line.strip.scan(/^D(\d{1,2}).(\d{1,2}).(\d{2,4})/).flatten
-        if date.count == 3 
-          guessed_format = date[0].to_i.between?(1, 12) ? (date[1].to_i.between?(1, 12) ? nil : 'mm/dd') : 'dd/mm'
-          guessed_format += '/' + 'y'*date[2].length if guessed_format
-        end
+
+        date = line[1..-1]
+        guessed_format = Qif::DateFormat::SUPPORTED_DATEFORMAT.find { |format_string, format|
+          test_date_with_format?(date, format_string, format)
+        }
       end until guessed_format
+
       @data.rewind
-      guessed_format
+
+      guessed_format ? guessed_format.first : @fallback_format
     end
 
     private
+
+    def test_date_with_format?(date, format_string, format)
+      parsed_date = Date.strptime(date, format)
+      if parsed_date > Date.strptime('01/01/1900', '%d/%m/%Y')
+        @fallback_format ||= format_string
+        parsed_date.day > 12
+      end
+    rescue
+      false
+    end
   
     def read_all_transactions
       while next_transaction; end
