@@ -11,7 +11,7 @@ describe Qif::Writer do
   describe '::open' do
     before do
       @path = '/tmp/test'
-      File.stub!(:open).and_yield @io
+      File.stub(:open).and_yield @io
     end
     
     it 'should yield a Qif::Writer' do
