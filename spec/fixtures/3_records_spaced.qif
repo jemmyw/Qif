@@ -1,0 +1,19 @@
+!Type:Bank
+D1/ 1/10
+T-10.00
+LDebit
+PDescription
+MReference
+^
+D6/ 1/10
+T-20.00
+LDebit
+PDescription
+MReference
+^
+D12/29/10
+T30.00
+LCredit
+PDescription
+MReference
+^

@@ -46,6 +46,12 @@ describe Qif::Reader do
     end
   end
 
+  context "when format has spaces" do
+    it_behaves_like "3 record files" do
+      let(:instance) { Qif::Reader.new(open('spec/fixtures/3_records_spaced.qif').read) }
+    end
+  end
+
   context "it should still work when the record header is followed by an invalid transaction terminator" do
     it_behaves_like "3 record files" do
       let(:instance) { Qif::Reader.new(open('spec/fixtures/3_records_invalid_header.qif'), 'dd/mm/yy') }
