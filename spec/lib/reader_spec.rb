@@ -107,4 +107,42 @@ describe Qif::Reader do
     @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'), 'mm/dd/yyyy')
     @instance.size.should == 2
   end
+
+  context 'when reading splits' do
+    let(:reader) { Qif::Reader.new(open('spec/fixtures/splits.qif'), 'd/m/yyyy') }
+
+    context 'the first transaction' do
+      let (:transaction) { reader.transactions[0] }
+
+      it 'should have the correct number of splits' do
+        expect(transaction.splits.size).to eq(2)
+      end
+
+      context 'the first split' do
+        let (:split) { transaction.splits.first }
+
+        it { expect(split.category).to eq("[steve]") }
+        it { expect(split.memo).to eq("Cash") }
+        it { expect(split.amount).to eq(-253.64)}
+      end
+
+      context 'the second split' do
+        let (:split) { transaction.splits[1] }
+
+        it { expect(split.category).to eq("Mort Int") }
+        it { expect(split.amount).to eq(746.36) }
+      end
+
+    end
+
+    context "when the transaction has splits first" do
+      let(:transaction) { reader.transactions[1] }
+
+      it 'should correctly add the amount to the transaction' do
+        expect(transaction.amount).to eq(75)
+      end
+
+      it { expect(transaction.splits.first.amount).to eq(23) }
+    end
+  end
 end
