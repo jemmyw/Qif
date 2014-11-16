@@ -1,6 +1,7 @@
 require 'stringio'
 require 'qif/date_format'
 require 'qif/transaction'
+require 'qif/transaction/builder'
 
 module Qif
   # The Qif::Reader class reads a qif file and provides access to
@@ -152,9 +153,8 @@ module Qif
     end
   
     def read_transaction
-      if record = read_record
-        transaction = Transaction.read(record)
-        cache_transaction(transaction) if transaction
+      if transaction = read_record
+        cache_transaction(transaction)
       end
     end
   
@@ -163,17 +163,27 @@ module Qif
     end
 
     def read_record
-      record = {}
+      builder = Qif::Transaction::Builder.new(->(dt){@format.parse(dt)})
       begin
-        line = @data.readline
-        key = line[0,1]
-        record[key] = record.key?(key) ? record[key] + "\n" + line[1..-1].strip : line[1..-1].strip
-
-        record[key].sub!(',','') if %w(T U $).include? key
-        record[key] = @format.parse(record[key]) if %w(D).include? key
-
-      end until line =~ /^\^/
-      record
+        line = @data.readline.strip
+        key = line.slice!(0, 1)
+        builder =
+          case key
+            when 'D' then builder.set_date(line)
+            when 'T' then builder.set_amount(line)
+            when 'A' then builder.set_address(line)
+            when 'C' then builder.set_status(line)
+            when 'N' then builder.set_number(line)
+            when 'P' then builder.set_payee(line)
+            when 'M' then builder.set_memo(line)
+            when 'L' then builder.set_category(line)
+            when 'S' then builder.add_split(line)
+            when 'E' then builder.set_split_memo(line)
+            when '$' then builder.set_split_amount(line)
+            else builder
+          end
+      end until key == "^"
+      builder.build
       rescue EOFError => e
         @data.close
         nil

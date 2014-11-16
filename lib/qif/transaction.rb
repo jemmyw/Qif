@@ -12,6 +12,7 @@ module Qif
       :memo           => {"M" => "Memo"                                                              },
       :adress         => {"A" => "Address (up to five lines; the sixth line is an optional message)" },
       :category       => {"L" => "Category (Category/Subcategory/Transfer/Class)"                    },
+      # do we still need these? we have splits now
       :split_category => {"S" => "Category in split (Category/Transfer/Class)"                       },
       :split_memo     => {"E" => "Memo in split"                                                     },
       :split_amount   => {"$" => "Dollar amount of split"                                            },
@@ -24,14 +25,12 @@ module Qif
     }
     SUPPORTED_FIELDS.keys.each{|s| attr_accessor s}
 
-    def self.read(record) #::nodoc
-      return nil unless record['D'].respond_to?(:strftime)
-      SUPPORTED_FIELDS.each{|k,v| record[k] = record.delete(v.keys.first)}
-      record.reject{|k,v| v.nil?}.each{|k,v| record[k] = record[k].to_f if k.to_s.include? "amount"}
-      Transaction.new record
-    end
+    attr_reader :splits
+    alias :address :adress
+    alias :address= :adress=
 
     def initialize(attributes = {})
+      @splits = []
       deprecate_attributes!(attributes)
       SUPPORTED_FIELDS.keys.each{|s| instance_variable_set("@#{s.to_s}", attributes[s])}
     end
