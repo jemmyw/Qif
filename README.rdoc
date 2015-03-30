@@ -17,7 +17,7 @@
   require 'qif'
   qif = Qif::Reader.new(open('/path/to/file.qif'))
   qif.each do |transaction|
-    puts [transaction.name, transaction.description, transaction.amount].join(", ")
+    puts [transaction.payee, transaction.amount].join(", ")
   end
 
 === CSV conversion example
