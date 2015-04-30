@@ -2,6 +2,8 @@ require 'stringio'
 require 'qif/date_format'
 require 'qif/transaction'
 require 'qif/transaction/builder'
+require 'qif/account'
+require 'qif/account/builder'
 
 module Qif
   # The Qif::Reader class reads a qif file and provides access to
@@ -162,10 +164,35 @@ module Qif
       transaction_cache[@index] = transaction
     end
 
+    def read_account
+      builder = Qif::Account::Builder.new
+      begin
+        line = @data.readline.strip
+        key = line.slice!(0, 1)
+        builder =
+          case key
+            when 'N' then builder.set_name(line)
+            when 'T' then builder.set_type(line)
+            when 'D' then builder.set_description(line)
+            when 'L' then builder.set_limit(line)
+            when '/' then builder.set_balance_date(line)
+            when '$' then builder.set_balance(line)
+            else builder
+          end
+      end until key == "^"
+      builder.build
+      rescue EOFError => e
+        @data.close
+        nil
+      rescue Exception => e
+        nil
+    end
+
     def read_record
       builder = Qif::Transaction::Builder.new(->(dt){@format.parse(dt)})
       begin
         line = @data.readline.strip
+        return read_account if line =~ /^\!Account/
         key = line.slice!(0, 1)
         builder =
           case key
