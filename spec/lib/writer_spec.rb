@@ -51,6 +51,15 @@ describe Qif::Writer do
       ran.should be_true
     end
     
+    it 'should write the account' do
+      
+      Qif::Writer.new(@io) do |writer|
+        writer << Qif::Account.new(:name => 'Expenses:Eating and Drinking:Coffee')
+      end
+      
+      @buffer.should include('NExpenses:Eating and Drinking:Coffee')
+    end
+
     it 'should write the transactions' do
       date = Time.now
       
