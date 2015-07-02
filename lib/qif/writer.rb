@@ -52,6 +52,7 @@ module Qif
       @type = type
       @format = format
       @transactions = []
+      @accounts = []
       
       if block_given?
         yield self
@@ -61,11 +62,17 @@ module Qif
     
     # Add a transaction for writing
     def <<(transaction)
-      @transactions << transaction
+      case transaction.class.to_s
+      when "Qif::Transaction"
+        @transactions << transaction
+      when "Qif::Account"
+        @accounts << transaction
+      end  
     end
     
     # Write the qif file
     def write
+      write_account
       write_header
       write_transactions
     end
@@ -79,6 +86,10 @@ module Qif
     
     def write_header
       @io.write("!Type:%s\n" % @type)
+    end
+
+    def write_account
+      write_record(@accounts.first.to_s) # only one account per file
     end
     
     def write_transactions
