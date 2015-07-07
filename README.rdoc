@@ -33,10 +33,10 @@
   #   [3] debit amount,
   #   [4] credit amount
   #   Ignore other fields
-  basefile = 'file'
-  bank_input = CSV.read("#{file}.csv")
+  basefile = 'filename'
+  bank_input = CSV.read("#{basefile}.csv")
 
-  Qif::Writer.open("#{file}.qif", type = 'Bank', format = 'dd/mm/yyyy') do |qif|
+  Qif::Writer.open("#{basefile}.qif", type = 'Bank', format = 'dd/mm/yyyy') do |qif|
     bank_input.each do |row|
       # Fix the values depending on what state your CSV data is in
       row.each { |value| value.to_s.gsub!(/^\s+|\s+$/,'') }
