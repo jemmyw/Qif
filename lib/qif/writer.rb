@@ -60,7 +60,7 @@ module Qif
       end
     end
     
-    # Add a transaction for writing
+    # Add a QIF entry for writing
     def <<(transaction)
       case transaction.class.to_s
       when "Qif::Transaction"
@@ -89,7 +89,9 @@ module Qif
     end
 
     def write_account
-      write_record(@accounts.first.to_s) # only one account per file
+      @accounts.each do |a|
+        write_record(a)
+      end
     end
     
     def write_transactions

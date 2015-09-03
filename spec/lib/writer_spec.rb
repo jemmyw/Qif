@@ -60,6 +60,17 @@ describe Qif::Writer do
       @buffer.should include('NExpenses:Eating and Drinking:Coffee')
     end
 
+    it 'should write multiple accounts' do
+      
+      Qif::Writer.new(@io) do |writer|
+        writer << Qif::Account.new(:name => 'Expenses:Eating and Drinking:Coffee')
+        writer << Qif::Account.new(:name => 'Expenses:Eating and Drinking:Tea')
+      end
+      
+      @buffer.should include('NExpenses:Eating and Drinking:Coffee')
+      @buffer.should include('NExpenses:Eating and Drinking:Tea')
+    end
+
     it 'should write the transactions' do
       date = Time.now
       
