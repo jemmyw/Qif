@@ -145,4 +145,15 @@ describe Qif::Reader do
       it { expect(transaction.splits.first.amount).to eq(23) }
     end
   end
+
+  context "reading account blocks" do
+    it 'should parse the account block' do
+      @instance = Qif::Reader.new(open('spec/fixtures/quicken_non_investement_account_with_account_block.qif'))
+      account = @instance.transactions.last
+      expect(account).to be_a(Qif::Account)
+      expect(account.name).to eq("Nice Account")
+      expect(account.type).to eq("Bank")
+      expect(account.description).to eq("This is a fine account")
+    end
+  end
 end
