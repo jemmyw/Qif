@@ -51,7 +51,7 @@ module Qif
         else
           "#{field}#{current}"
         end
-      end.flatten.compact.join("\n")
+      end.concat(@splits.collect{|s| s.to_s}).flatten.compact.join("\n")
     end
 
     private
