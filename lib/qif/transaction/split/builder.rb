@@ -1,12 +1,16 @@
 require_relative '../builderable'
 require_relative '../split'
 
+#
+# Factory class for buliding splits. Do not construct this directly, rather use
+# Qif::Transaction::Builder#add_split
+#
 class Qif::Transaction::Split::Builder
   include Builderable
 
   def initialize(transaction_builder)
     @transaction_builder = transaction_builder
-    @txn = Qif::Transaction::Split.new
+    yield self if block_given?
   end
 
   def add_split(split_memo)
@@ -19,7 +23,7 @@ class Qif::Transaction::Split::Builder
   set_builder_method :category
 
   def build_split
-    @txn
+    _build(Qif::Transaction::Split.new)
   end
 
   def method_missing(name, *args, &block)

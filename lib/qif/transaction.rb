@@ -12,10 +12,6 @@ module Qif
       :memo           => {"M" => "Memo"                                                              },
       :adress         => {"A" => "Address (up to five lines; the sixth line is an optional message)" },
       :category       => {"L" => "Category (Category/Subcategory/Transfer/Class)"                    },
-      # do we still need these? we have splits now
-      :split_category => {"S" => "Category in split (Category/Transfer/Class)"                       },
-      :split_memo     => {"E" => "Memo in split"                                                     },
-      :split_amount   => {"$" => "Dollar amount of split"                                            },
       :end            => {"^" => "End of entry"                                                      }
     }
     DEPRECATION_FIELDS = {
@@ -33,6 +29,10 @@ module Qif
       @splits = []
       deprecate_attributes!(attributes)
       SUPPORTED_FIELDS.keys.each{|s| instance_variable_set("@#{s.to_s}", attributes[s])}
+    end
+
+    def add_split(split)
+      @splits << split
     end
 
     # Returns a representation of the transaction as it

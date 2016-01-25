@@ -2,11 +2,23 @@ require_relative "split/builder"
 require_relative "builderable"
 require_relative "../amount_parser"
 
+#
+# Factory class for building transactions.
+#
+# @usage
+# txn = Qif::Transaction::Builder.new
+#   .set_date('10/06/1983')
+#   .set_amount('-10.0')
+#   .set_memo('debit $10')
+#   .add_split('jules')
+#   .set_split_memo('half to jules')
+#   .add_split_amount('-5.0')
+#   .build
+#
 class Qif::Transaction::Builder
   include Builderable
 
   def initialize(date_parser = ->(date) { Time.parse(date) })
-    @txn = Qif::Transaction.new
     @date_parser = date_parser
     @splits = []
   end
@@ -19,25 +31,26 @@ class Qif::Transaction::Builder
   set_builder_method :memo
   set_builder_method :category
 
-  def set_adress(address)
-    @txn.address = @txn.address ? @txn.address += "\n#{address}" : address
+  def set_address(address)
+    @address = [@address, address].compact.join("\n")
     self
   end
-
-  alias :set_address :set_adress
+  alias :set_adress :set_address
 
   def add_split(split)
-    Qif::Transaction::Split::Builder.new(self).tap do |split_builder|
-      @splits << split_builder
-      split_builder.set_split_category(split)
+    Qif::Transaction::Split::Builder.new(self).set_split_category(split).tap do |builder|
+      @splits << builder
     end
   end
 
   def build
-    @splits.each do |split_builder|
-      @txn.splits << split_builder.build_split
+    _build(Qif::Transaction.new).tap do |txn|
+      txn.address = @address
+
+      @splits.each do |split_builder|
+        txn.add_split(split_builder.build_split)
+      end
     end
-    @txn
   end
 
   private
