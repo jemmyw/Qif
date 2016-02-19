@@ -28,7 +28,10 @@ module Qif
     def initialize(attributes = {})
       @splits = []
       deprecate_attributes!(attributes)
-      SUPPORTED_FIELDS.keys.each{|s| instance_variable_set("@#{s.to_s}", attributes[s])}
+
+      SUPPORTED_FIELDS.keys.each do |field|
+        send("#{field}=", attributes[field])
+      end
     end
 
     def add_split(split)
@@ -52,6 +55,10 @@ module Qif
           "#{field}#{current}"
         end
       end.concat(@splits.collect{|s| s.to_s}).flatten.compact.join("\n")
+    end
+
+    def inspect
+      to_s
     end
 
     private
