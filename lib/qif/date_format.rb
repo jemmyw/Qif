@@ -23,6 +23,8 @@ module Qif
       "m/dd/yy"     => "%m/%d/%y",
       "mm/d/yy"     => "%m/%d/%y",
       "m/d/yy"      => "%m/%d/%y",
+
+      "m'd'yy"      => "%m'%d'%y",
     }
 
     def initialize(format = 'dd/mm/yyyy')
