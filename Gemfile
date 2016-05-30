@@ -6,6 +6,6 @@ gem "rake"
 gem "rdoc", :require => false
 gem "rspec"
 
-group :development do
+group :development, :test do
   gem "byebug"
 end

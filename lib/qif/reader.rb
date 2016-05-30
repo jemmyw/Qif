@@ -18,7 +18,7 @@ module Qif
     include Enumerable
 
     attr_reader :index
-  
+
     SUPPORTED_ACCOUNTS = {
       "!Type:Bank" => "Bank account transactions",
       "!Type:Cash" => "Cash account transactions",
@@ -33,19 +33,20 @@ module Qif
     # Create a new Qif::Reader object. The data argument must be
     # either an IO object or a String containing the Qif file data.
     #
-    # The optional format argument specifies the date format in the file. 
-    # Giving a format will force it, otherwise the format will guessed 
-    # reading the transactions in the file, this defaults to 'dd/mm/yyyy' 
+    # The optional format argument specifies the date format in the file.
+    # Giving a format will force it, otherwise the format will guessed
+    # reading the transactions in the file, this defaults to 'dd/mm/yyyy'
     # if guessing method fails.
     def initialize(data, format = nil)
       @data = data.respond_to?(:read) ? data : StringIO.new(data.to_s)
       @format = DateFormat.new(format || guess_date_format || 'dd/mm/yyyy')
+      @errors = []
       read_header
       raise(UnrecognizedData, "Provided data doesn't seems to represent a QIF file") unless @header
       raise(UnknownAccountType, "Unknown account type. Should be one of followings :\n#{SUPPORTED_ACCOUNTS.keys.inspect}") unless SUPPORTED_ACCOUNTS.keys.collect(&:downcase).include? @header.downcase
       reset
     end
-    
+
     # Return an array of Qif::Transaction objects from the Qif file. This
     # method reads the whole file before returning, so it may not be suitable
     # for very large qif files.
@@ -53,7 +54,7 @@ module Qif
       read_all_transactions
       transaction_cache
     end
-  
+
     # Call a block with each Qif::Transaction from the Qif file. This
     # method yields each transaction as it reads the file so it is better
     # to use this than #transactions for large qif files.
@@ -61,14 +62,24 @@ module Qif
     #   reader.each do |transaction|
     #     puts transaction.amount
     #   end
-    def each(&block)    
+    def each(&block)
       reset
-    
+
       while transaction = next_transaction
         yield transaction
       end
     end
-    
+
+    def errors
+      read_all_transactions
+      @errors
+    end
+
+    def has_errors?
+      read_all_transactions
+      @errors.length > 0
+    end
+
     # Return the number of transactions in the qif file.
     def size
       read_all_transactions
@@ -104,22 +115,22 @@ module Qif
     rescue
       false
     end
-  
+
     def read_all_transactions
       while next_transaction; end
     end
-  
+
     def transaction_cache
       @transaction_cache ||= []
     end
-  
+
     def reset
       @index = -1
     end
-  
+
     def next_transaction
       @index += 1
-    
+
       if transaction = transaction_cache[@index]
         transaction
       else
@@ -145,21 +156,21 @@ module Qif
 
       @header = headers.shift
       @options = headers.map{|h| h.split(':') }.last
-      
+
       unless line =~ /^\^/
         rewind_to @data.lineno - 1
       end
       headers
     end
-  
+
     def read_transaction
       if transaction = read_record
         cache_transaction(transaction)
       end
     end
-  
+
     def cache_transaction(transaction)
-      transaction_cache[@index] = transaction
+      transaction_cache[@index] = transaction unless transaction.is_a?(Exception)
     end
 
     def read_record
@@ -187,8 +198,11 @@ module Qif
       rescue EOFError => e
         @data.close
         nil
-      rescue Exception => e
+      rescue IOError => e
         nil
+      rescue Exception => e
+        @errors << { data: line, error: e.message }
+        e
     end
   end
 end
