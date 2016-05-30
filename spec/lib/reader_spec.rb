@@ -92,17 +92,17 @@ describe Qif::Reader do
     expect(@instance.size).to eq(3)
     expect(@instance.collect(&:amount)).to eq([-1010.0, -30020.0, 30.0])
   end
-  
+
   it 'should initialize with an io object' do
     @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'))
     expect(@instance.size).to eq(3)
   end
-  
+
   it 'should initialize with data in a string' do
     @instance = Qif::Reader.new(File.read('spec/fixtures/3_records_ddmmyyyy.qif'))
     expect(@instance.size).to eq(3)
   end
-  
+
   it 'should reject transactions whose date does not match the given date format' do
     @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'), 'mm/dd/yyyy')
     expect(@instance.size).to eq(2)
