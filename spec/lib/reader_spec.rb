@@ -103,9 +103,20 @@ describe Qif::Reader do
     expect(@instance.size).to eq(3)
   end
 
-  it 'should reject transactions whose date does not match the given date format' do
-    @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'), 'mm/dd/yyyy')
-    expect(@instance.size).to eq(2)
+  context 'given invalid data' do
+    let(:instance) { Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'), 'mm/dd/yyyy') }
+
+    it 'should reject transactions whose date does not match the given date format' do
+      expect(instance.size).to eq(2)
+    end
+
+    it 'should know about any errors' do
+      expect(instance.has_errors?).to be_truthy
+    end
+
+    it 'should provide access to any errors' do
+      expect(instance.errors).to eq([{ data: "29/12/2010", error: "invalid date" }])
+    end
   end
 
   context 'when reading splits' do

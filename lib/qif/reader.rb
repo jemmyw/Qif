@@ -40,6 +40,7 @@ module Qif
     def initialize(data, format = nil)
       @data = data.respond_to?(:read) ? data : StringIO.new(data.to_s)
       @format = DateFormat.new(format || guess_date_format || 'dd/mm/yyyy')
+      @errors = []
       read_header
       raise(UnrecognizedData, "Provided data doesn't seems to represent a QIF file") unless @header
       raise(UnknownAccountType, "Unknown account type. Should be one of followings :\n#{SUPPORTED_ACCOUNTS.keys.inspect}") unless SUPPORTED_ACCOUNTS.keys.collect(&:downcase).include? @header.downcase
@@ -69,6 +70,17 @@ module Qif
       end
     end
     
+
+    def errors
+      read_all_transactions
+      @errors
+    end
+
+    def has_errors?
+      read_all_transactions
+      @errors.length > 0
+    end
+
     # Return the number of transactions in the qif file.
     def size
       read_all_transactions
@@ -159,7 +171,7 @@ module Qif
     end
   
     def cache_transaction(transaction)
-      transaction_cache[@index] = transaction
+      transaction_cache[@index] = transaction unless transaction.is_a?(Exception)
     end
 
     def read_record
@@ -187,8 +199,11 @@ module Qif
       rescue EOFError => e
         @data.close
         nil
-      rescue Exception => e
+      rescue IOError => e
         nil
+      rescue Exception => e
+        @errors << { data: line, error: e.message }
+        e
     end
   end
 end
