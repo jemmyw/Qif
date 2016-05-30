@@ -2,7 +2,6 @@ require 'time'
 
 module Qif
   class DateFormat
-    attr_reader :format
 
     SUPPORTED_DATEFORMAT = {
       "dd/mm/yyyy"  => "%d/%m/%Y",
