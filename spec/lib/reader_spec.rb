@@ -67,40 +67,40 @@ describe Qif::Reader do
 
   describe '#guess_date_format' do
     it 'should guess the date format dd/mm/yyyy' do
-      @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'))
-      expect(@instance.guess_date_format).to eq('dd/mm/yyyy')
+      instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'))
+      expect(instance.guess_date_format).to eq('dd/mm/yyyy')
     end
 
     it 'should guess the date format mm/dd/yy' do
-      @instance = Qif::Reader.new(open('spec/fixtures/3_records_mmddyy.qif'))
-      expect(@instance.guess_date_format).to eq('mm/dd/yy')
+      instance = Qif::Reader.new(open('spec/fixtures/3_records_mmddyy.qif'))
+      expect(instance.guess_date_format).to eq('mm/dd/yy')
     end
 
     it 'should fall back to best guess if the date are ambiguious' do
-      @instance = Qif::Reader.new(open('spec/fixtures/quicken_non_investement_account.qif'))
-      expect(@instance.guess_date_format).to eq('dd/mm/yy')
+      instance = Qif::Reader.new(open('spec/fixtures/quicken_non_investement_account.qif'))
+      expect(instance.guess_date_format).to eq('dd/mm/yy')
     end
 
     it 'should guess the date format d/m/yy' do
-      @instance = Qif::Reader.new(open('spec/fixtures/3_records_dmyy.qif'))
-      expect(@instance.guess_date_format).to eq('dd/mm/yy')
+      instance = Qif::Reader.new(open('spec/fixtures/3_records_dmyy.qif'))
+      expect(instance.guess_date_format).to eq('dd/mm/yy')
     end
   end
 
   it 'should parse amounts with comma separator too' do
-    @instance = Qif::Reader.new(open('spec/fixtures/3_records_separator.qif'))
-    expect(@instance.size).to eq(3)
-    expect(@instance.collect(&:amount)).to eq([-1010.0, -30020.0, 30.0])
+    instance = Qif::Reader.new(open('spec/fixtures/3_records_separator.qif'))
+    expect(instance.size).to eq(3)
+    expect(instance.collect(&:amount)).to eq([-1010.0, -30020.0, 30.0])
   end
 
   it 'should initialize with an io object' do
-    @instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'))
-    expect(@instance.size).to eq(3)
+    instance = Qif::Reader.new(open('spec/fixtures/3_records_ddmmyyyy.qif'))
+    expect(instance.size).to eq(3)
   end
 
   it 'should initialize with data in a string' do
-    @instance = Qif::Reader.new(File.read('spec/fixtures/3_records_ddmmyyyy.qif'))
-    expect(@instance.size).to eq(3)
+    instance = Qif::Reader.new(File.read('spec/fixtures/3_records_ddmmyyyy.qif'))
+    expect(instance.size).to eq(3)
   end
 
   context 'given invalid data' do
